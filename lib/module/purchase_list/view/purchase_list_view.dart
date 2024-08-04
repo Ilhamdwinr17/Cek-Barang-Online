@@ -105,6 +105,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 //import 'package:get/get_state_manager/src/simple/get_state.dart';
 import '../controller/purchase_list_controller.dart';
 import 'package:mvc_demo/core.dart';
@@ -499,13 +500,69 @@ class PurchaseListView extends StatefulWidget {
                               DataCell(Row(
                                 children: [
                                   IconButton(
-                                    icon: const Icon(Icons.delete,
-                                        color: Colors.red),
-                                    onPressed: () => controller.delete(item),
-                                  ),
+                                      icon: const Icon(Icons.delete,
+                                          color: Colors.red),
+                                      iconSize: 20,
+                                      onPressed: () async {
+                                        await showDialog<void>(
+                                          context: context,
+                                          barrierDismissible: true,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text('Info'),
+                                              content:
+                                                  const SingleChildScrollView(
+                                                child: ListBody(
+                                                  children: <Widget>[
+                                                    Text(
+                                                        'Anda ingin menghapus data ini?'),
+                                                  ],
+                                                ),
+                                              ),
+                                              actions: <Widget>[
+                                                ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                  ),
+                                                  onPressed: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: const Text("Tidak"),
+                                                ),
+                                                ElevatedButton(
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        Colors.white,
+                                                  ),
+                                                  onPressed: () async {
+                                                    await controller
+                                                        .delete(item);
+                                                    Navigator.pop(
+                                                        context); // Tutup dialog setelah penghapusan berhasil
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      const SnackBar(
+                                                        content: Text(
+                                                            'Data berhasil dihapus'),
+                                                      ),
+                                                    );
+                                                  },
+                                                  child: const Text("Ya"),
+                                                ),
+                                              ],
+                                            ).animate().fade().shake();
+                                          },
+                                        );
+                                      } //controller.delete(item),
+                                      ),
                                   IconButton(
                                     icon: const Icon(Icons.edit,
                                         color: Colors.blue),
+                                    iconSize: 20,
                                     onPressed: () =>
                                         controller.updateStatus(item),
                                   ),

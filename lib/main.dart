@@ -26,7 +26,8 @@ class MyApp extends StatelessWidget {
               unselectedItemColor: Colors.grey, selectedItemColor: Colors.blue),
         ),
         debugShowCheckedModeBanner: false,
-        home: const LoginView());
+        //home: const LoginView());
+        home: const MainNavigationView());
 
     //theme: DarkTheme().getTheme(),
   }

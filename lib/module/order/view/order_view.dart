@@ -1,3 +1,4 @@
+//import 'package:get/get.dart';
 /*import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_demo/core.dart';
@@ -366,11 +367,14 @@ class OrderView extends StatefulWidget {
   State<OrderView> createState() => OrderController();
 }*/
 
-//BATAS
+//BATAS 1
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+/*import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:mvc_demo/core.dart';
+import 'package:mvc_demo/module/log_detail/view/log_detail_view.dart';
+import 'package:mvc_demo/module/log_form_edit/log_form_edit_view.dart';
 
 import 'package:mvc_demo/module/order/controller/order_controller.dart';
 import 'package:mvc_demo/module/purchase_form/view/purchase_form_view.dart';
@@ -539,6 +543,11 @@ class OrderView extends StatefulWidget {
                       vertical: 3.0, horizontal: 3.0),
                   elevation: 3.0,
                   child: ListTile(
+                    onTap: () async {
+                      Get.to(LogDetailView(
+                        item: item,
+                      ));
+                    },
                     title: Text(item["Log ID"]),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -547,7 +556,353 @@ class OrderView extends StatefulWidget {
                         //Text("Created At: ${date.toString()}"),
                       ],
                     ),
-                    trailing: Text(item["Received by"]),
+                    // trailing: Text(item["Received by"]),
+                    trailing: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            //Text(item["Received by"]),
+                            // const SizedBox(width: 8.0),
+                            IconButton(
+                              onPressed: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => const LogFormEditView(
+                                    documentId:
+                                        "your_document_id_here", // Pass document ID
+                                  ),
+                                ));
+                              },
+                              icon: const Icon(
+                                Icons.edit,
+                                color: Colors.blue,
+                                size: 20.0,
+                              ),
+                            ),
+                            IconButton(
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                  size: 20.0,
+                                ),
+                                onPressed: () async {
+                                  await showDialog<void>(
+                                    context: context,
+                                    barrierDismissible: true,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text('Info'),
+                                        content: const SingleChildScrollView(
+                                          child: ListBody(
+                                            children: <Widget>[
+                                              Text(
+                                                  'Anda ingin menghapus data ini?'),
+                                            ],
+                                          ),
+                                        ),
+                                        actions: <Widget>[
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.white,
+                                            ),
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text("Tidak"),
+                                          ),
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.white,
+                                            ),
+                                            onPressed: () async {
+                                              await controller.delete(item);
+                                              Navigator.pop(
+                                                  context); // Tutup dialog setelah penghapusan berhasil
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                      'Data berhasil dihapus'),
+                                                ),
+                                              );
+                                            },
+                                            child: const Text("Ya"),
+                                          ),
+                                        ],
+                                      ).animate().fade().shake();
+                                    },
+                                  );
+                                } //controller.delete(item),
+                                ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  @override
+  State<OrderView> createState() => OrderController();
+}*/
+
+// BATAS 2
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:mvc_demo/core.dart';
+import 'package:mvc_demo/module/log_detail/view/log_detail_view.dart';
+import 'package:mvc_demo/module/log_form_edit/log_form_edit_view.dart';
+
+import 'package:mvc_demo/module/order/controller/order_controller.dart';
+import 'package:mvc_demo/module/purchase_form/view/purchase_form_view.dart';
+import 'package:mvc_demo/state_util.dart';
+
+import '../../../shared/util/date_util/date_util.dart';
+
+class OrderView extends StatefulWidget {
+  const OrderView({super.key});
+
+  Widget build(context, OrderController controller) {
+    controller.view = this;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: controller.isSearching
+            ? TextField(
+                controller: controller.searchController,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  hintText: "Search...",
+                  border: InputBorder.none,
+                ),
+                onChanged: controller.updateSearchQuery,
+              )
+            : Row(
+                children: [
+                  const SizedBox(width: 1.0),
+                  Image.asset(
+                    'lib/shared/util/assets/images/LogiWatch.png',
+                    height: 20.0,
+                  ),
+                  const SizedBox(width: 8.0),
+                  const Text("Logs"),
+                ],
+              ),
+        backgroundColor: Colors.blue,
+        actions: controller.isSearching
+            ? [
+                IconButton(
+                  onPressed: controller.clearSearch,
+                  icon: const Icon(
+                    Icons.clear,
+                    size: 24.0,
+                  ),
+                ),
+              ]
+            : [
+                IconButton(
+                  onPressed: controller.startSearch,
+                  icon: const Icon(
+                    Icons.search,
+                    size: 24.0,
+                  ),
+                ),
+                const SizedBox(width: 20.0),
+              ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius: 40.0,
+                      backgroundImage: AssetImage(
+                          'lib/shared/util/assets/images/LogiWatch.png'),
+                    ),
+                    SizedBox(height: 10.0),
+                    Text(
+                      'Admin Cek Barang Online',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ]),
+            ),
+            ListTile(
+              leading: const Icon(Icons.account_circle),
+              title: const Text('Profile'),
+              onTap: () {
+                // Handle the tap
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.message),
+              title: const Text('Feedback'),
+              onTap: () {
+                // Handle the tap
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.mic),
+              title: const Text('Assistant'),
+              onTap: () {
+                // Handle the tap
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Settings'),
+              onTap: () {
+                // Handle the tap
+              },
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+          foregroundColor: Colors.white,
+          backgroundColor: Colors.blue,
+          onPressed: () => Get.to(const LogFormView()),
+          child: const Icon(Icons.add)),
+      body: Container(
+        padding: const EdgeInsets.all(10.0),
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection("Log").snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) return const Text("Error");
+            if (!snapshot.hasData) return const Text("Loading...");
+
+            List<QueryDocumentSnapshot> filteredDocs =
+                controller.filterData(snapshot.data!.docs);
+
+            if (filteredDocs.isEmpty) {
+              return const Text("No Data");
+            }
+
+            return ListView.builder(
+              itemCount: filteredDocs.length,
+              itemBuilder: (context, index) {
+                Map<String, dynamic> item =
+                    filteredDocs[index].data() as Map<String, dynamic>;
+                item["id"] = filteredDocs[index].id;
+                var Date = item["Date"];
+                var date = (Date as Timestamp).toDate();
+                var specification = item["Specification PR"];
+
+                return Card(
+                  margin: const EdgeInsets.symmetric(
+                      vertical: 3.0, horizontal: 3.0),
+                  elevation: 3.0,
+                  child: ListTile(
+                    onTap: () async {
+                      Get.to(LogDetailView(
+                        item: item,
+                      ));
+                    },
+                    title: Text(item["Log ID"]),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(item["Specification PR"]),
+                      ],
+                    ),
+                    trailing: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => LogFormEditView(
+                                    documentId: item["id"], // Pass document ID
+                                  ),
+                                ));
+                              },
+                              icon: const Icon(
+                                Icons.edit,
+                                color: Colors.blue,
+                                size: 20.0,
+                              ),
+                            ),
+                            IconButton(
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                  size: 20.0,
+                                ),
+                                onPressed: () async {
+                                  await showDialog<void>(
+                                    context: context,
+                                    barrierDismissible: true,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text('Info'),
+                                        content: const SingleChildScrollView(
+                                          child: ListBody(
+                                            children: <Widget>[
+                                              Text(
+                                                  'Anda ingin menghapus data ini?'),
+                                            ],
+                                          ),
+                                        ),
+                                        actions: <Widget>[
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.white,
+                                            ),
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text("Tidak"),
+                                          ),
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.white,
+                                            ),
+                                            onPressed: () async {
+                                              await controller.delete(item);
+                                              Navigator.pop(
+                                                  context); // Tutup dialog setelah penghapusan berhasil
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                      'Data berhasil dihapus'),
+                                                ),
+                                              );
+                                            },
+                                            child: const Text("Ya"),
+                                          ),
+                                        ],
+                                      ).animate().fade().shake();
+                                    },
+                                  );
+                                }),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },

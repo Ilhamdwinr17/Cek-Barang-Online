@@ -28,7 +28,42 @@ class ProfileView extends StatefulWidget {
         ),*/
         actions: [
           IconButton(
-            onPressed: () => controller.doLogout(),
+            onPressed: () async {
+              await showDialog<void>(
+                context: context,
+                barrierDismissible: true,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Info'),
+                    content: const SingleChildScrollView(
+                      child: ListBody(
+                        children: <Widget>[
+                          Text('Anda ingin keluar aplikasi?'),
+                        ],
+                      ),
+                    ),
+                    actions: <Widget>[
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueGrey,
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text("Cancel"),
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueGrey,
+                        ),
+                        onPressed: () => controller.doLogout(),
+                        child: const Text("OK"),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
             icon: const Icon(
               Icons.logout,
               size: 24.0,
